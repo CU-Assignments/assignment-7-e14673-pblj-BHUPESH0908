@@ -1,0 +1,53 @@
+Folder Structure:
+/studentmvc
+ ├── Student.java
+ ├── StudentView.java
+ ├── StudentController.java
+ └── StudentApp.java
+ Model (Student.java):
+public class Student {
+    private int studentID;
+    private String name;
+    private String department;
+    private double marks;
+
+    // Constructors, getters, setters
+}
+ Controller (StudentController.java):
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class StudentController {
+    private Connection conn;
+
+    public StudentController() throws SQLException {
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_db", "root", "your_password");
+    }
+
+    public void addStudent(Student student) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("INSERT INTO Student VALUES (?, ?, ?, ?)");
+        ps.setInt(1, student.getStudentID());
+        ps.setString(2, student.getName());
+        ps.setString(3, student.getDepartment());
+        ps.setDouble(4, student.getMarks());
+        ps.executeUpdate();
+    }
+
+    public List<Student> getAllStudents() throws SQLException {
+        List<Student> list = new ArrayList<>();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Student");
+        while (rs.next()) {
+            Student s = new Student();
+            s.setStudentID(rs.getInt(1));
+            s.setName(rs.getString(2));
+            s.setDepartment(rs.getString(3));
+            s.setMarks(rs.getDouble(4));
+            list.add(s);
+        }
+        return list;
+    }
+
+    // updateStudent(), deleteStudent() as needed
+}
